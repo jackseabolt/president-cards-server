@@ -8,6 +8,7 @@ const { JWT_SECRET } = require('../config');
 
 const basicStrategy = new BasicStrategy((username, password, callback) => {
     let user;
+    console.log('username and password', username, password);
     User.findOne({ username: username })
         .then(_user => {
             user = _user;
@@ -17,6 +18,7 @@ const basicStrategy = new BasicStrategy((username, password, callback) => {
                     message: 'Incorrect username or password'
                 });
             }
+            
             return user.validatePassword(password);
         })
         .then(isValid => {
@@ -29,6 +31,7 @@ const basicStrategy = new BasicStrategy((username, password, callback) => {
             return callback(null, user);
         })
         .catch(err => {
+            console.log('error in basic strategy:', err);
             if (err.reason === 'Login Error') {
                 return callback(null, false, err);
             }
