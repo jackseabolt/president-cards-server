@@ -18,6 +18,7 @@ const basicAuth = passport.authenticate('basic', { session: false });
 const jwtAuth = passport.authenticate('jwt', { session: false });
 
 router.post('/login', basicAuth, (req, res) => {
+  console.log('it got into the router');
   const authToken = createAuthToken(req.user.apiRepr());
   res.json({ authToken });
 });
