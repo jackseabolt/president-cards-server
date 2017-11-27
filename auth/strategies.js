@@ -1,50 +1,50 @@
-'use strict'; 
+'use strict';
 
-const { BasicStrategy } = require('passport-http'); 
-const { Strategy: JwtStrategy, ExtractJwt} = require('passport-jwt'); 
+const { BasicStrategy } = require('passport-http');
+const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 
-const { User } = require('../users'); 
-const { JWT_SECRET } = require('../config'); 
+const { User } = require('../users/models');
+const { JWT_SECRET } = require('../config');
 
 const basicStrategy = new BasicStrategy((username, password, callback) => {
-    let user; 
+    let user;
     User.findOne({ username: username })
         .then(_user => {
-            user = _user; 
+            user = _user;
             if (!user) {
                 return Promise.reject({
-                    reason: 'Login Error', 
+                    reason: 'Login Error',
                     message: 'Incorrect username or password'
-                }); 
+                });
             }
-            return user.validatePassword(password)
+            return user.validatePassword(password);
         })
         .then(isValid => {
             if (!isValid) {
                 return Promise.reject({
-                    reason: 'Login Error', 
+                    reason: 'Login Error',
                     message: 'Incorrect username or password'
-                }); 
+                });
             }
-            return callback(null, user)
+            return callback(null, user);
         })
         .catch(err => {
-            if (err.reason = 'Login Error') {
-                return callback(null, false, err)
+            if (err.reason === 'Login Error') {
+                return callback(null, false, err);
             }
-            return callback(err, false); 
-        }); 
-}); 
+            return callback(err, false);
+        });
+});
 
 const jwtStrategy = new JwtStrategy(
     {
-        secretOrKey: JWT_SECRET, 
+        secretOrKey: JWT_SECRET,
         jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer')
-    }, 
+    },
     (payload, done) => {
-        done(null, payload.user); 
+        done(null, payload.user);
     }
-); 
+);
 
-module.exports = { basicStrategy, jwtStrategy }; 
+module.exports = { basicStrategy, jwtStrategy };
 

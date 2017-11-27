@@ -72,11 +72,13 @@ router.post('/', jsonParser, (req, res) => {
       }
     
       let { username, password } = req.body;
-
+      console.log(req.body);
+      console.log(username);
       return User.find({ username })
         .count()
-        .the(count => {
+        .then(count => {
             if (count > 0) {
+                console.log('the error is firing!!!');
                 return Promise.reject({
                     code: 422, 
                     reason: 'Validation Error', 
@@ -84,18 +86,22 @@ router.post('/', jsonParser, (req, res) => {
                     location: 'username'
                 })
             }
+            console.log('count:', count);
             return User.hashPassword(password);
         })
         .then(hash => {
+            console.log('hash:', hash);
             return User.create({ username, password: hash}); 
         })
         .then(user => {
+            console.log('user:', user);
             return res.status(201).json(user.apiRepr()); 
         })
         .catch(err => {
             if (err.reason === 'Validation Error') {
                 return res.status(err.code).json(err); 
             }
+            console.error(err);
             res.status(500).json({ code: 500, message: 'Internal server error'});
         });
 });
