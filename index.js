@@ -9,7 +9,7 @@ mongoose.Promise = global.Promise;
 require('dotenv').config();
 
 const { router: usersRouter } = require('./users');
-const { router: authRouter, basicStrategy, jwtStrategy } = require('./auth');
+const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 
 const { PORT, CLIENT_ORIGIN } = require('./config');
 const { dbConnect } = require('./db-mongoose');
@@ -18,7 +18,7 @@ const jwtAuth = passport.authenticate('jwt', { session: false });
 
 const app = express();
 
-passport.use(basicStrategy);
+passport.use(localStrategy);
 passport.use(jwtStrategy);
 
 app.use(

@@ -4,6 +4,7 @@ const express = require('express');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const bodyParser = require('body-parser');
 
 const router = express.Router();
 
@@ -15,6 +16,8 @@ const createAuthToken = user => {
 };
 
 const localAuth = passport.authenticate('local', { session: false });
+router.use(bodyParser.json());
+
 const jwtAuth = passport.authenticate('jwt', { session: false });
 
 router.post('/login', localAuth, (req, res) => {
