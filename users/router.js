@@ -101,10 +101,10 @@ router.post('/', jsonParser, (req, res) => {
 
 
 
-        .then(xyz => {
+        .then(data => {
             // console.log('hash:', hash);
-            console.log(xyz)
-            return User.create({ firstName, lastName, username, password: hash }); 
+            console.log(data)
+            return User.create({ firstName, lastName, username, password: data[0], questions: data[1] }); 
         })
         .then(user => {
         // OUR MESS
