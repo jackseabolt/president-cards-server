@@ -27,6 +27,8 @@ const UserSchema = mongoose.Schema({
 
 UserSchema.methods.apiRepr = function() {
     return {
+        firstName: this.firstName,
+        lastName: this.lastName,
         username: this.username
     };
 }; 
