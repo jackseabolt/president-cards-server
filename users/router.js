@@ -108,7 +108,7 @@ router.post('/', jsonParser, (req, res) => {
 
 router.get('/', (req, res) => {
     User.find()
-        .then(users => res.json(users.apiRepr())); 
+        .then(users => res.json(users.map(user => user.apiRepr()))); 
 }); 
 
 module.exports = { router }; 
