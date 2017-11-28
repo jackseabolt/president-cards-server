@@ -9,6 +9,7 @@ mongoose.Promise = global.Promise;
 require('dotenv').config();
 
 const { router: usersRouter } = require('./users');
+const { router: questionsRouter } = require('./questions');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 
 const { PORT, CLIENT_ORIGIN } = require('./config');
@@ -34,6 +35,7 @@ app.use(
 );
 
 app.use('/api/users/', usersRouter);
+app.use('/api/questions', questionsRouter);
 app.use('/api/auth/', authRouter);
 
 app.get('/api/protected', jwtAuth, (req, res) => {
