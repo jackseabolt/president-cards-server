@@ -19,7 +19,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const stringFields = ['question', 'answers', 'correctAnswer'];
+  const stringFields = ['question', 'correctAnswer'];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
