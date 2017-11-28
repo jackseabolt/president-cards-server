@@ -104,7 +104,15 @@ router.post('/', jsonParser, (req, res) => {
         .then(data => {
             // console.log('hash:', hash);
             console.log(data)
-            return User.create({ firstName, lastName, username, password: data[0], questions: data[1] }); 
+            const questions = data[1].map((question, index) => {
+                return {
+                    question: question.question,
+                    answers: question.answers,
+                    correct_answer: question.correct_answer,
+                    next: 1
+                }
+            });
+            return User.create({ firstName, lastName, username, password: data[0], questions: questions }); 
         })
         .then(user => {
         // OUR MESS

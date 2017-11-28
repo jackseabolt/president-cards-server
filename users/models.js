@@ -29,14 +29,16 @@ const UserSchema = mongoose.Schema({
             answers: [
                 {
                     type: String
-                    // DO YOU NEED REQUIRED?
                 }
-                // IS THIS CORRECT?
             ],  
-            correct_answer: String
-            // later on we will add a next pointer
+            correct_answer: String,
+            next: Number
         }
-    ]
+    ],
+    head: {
+        type: Number,
+        default: 0
+    }
     // questions array of questions
 });
 
