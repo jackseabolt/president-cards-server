@@ -1,14 +1,13 @@
 'use strict';
 
-const { BasicStrategy } = require('passport-http');
+const { LocalStrategy } = require('passport-http');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 
 const { User } = require('../users/models');
 const { JWT_SECRET } = require('../config');
 
-const basicStrategy = new BasicStrategy((username, password, callback) => {
+const localStrategy = new LocalStrategy((username, password, callback) => {
     let user;
-    console.log('username and password', username, password);
     User.findOne({ username: username })
         .then(_user => {
             user = _user;
@@ -31,7 +30,6 @@ const basicStrategy = new BasicStrategy((username, password, callback) => {
             return callback(null, user);
         })
         .catch(err => {
-            console.log('error in basic strategy:', err);
             if (err.reason === 'Login Error') {
                 return callback(null, false, err);
             }
@@ -42,12 +40,13 @@ const basicStrategy = new BasicStrategy((username, password, callback) => {
 const jwtStrategy = new JwtStrategy(
     {
         secretOrKey: JWT_SECRET,
-        jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer')
+        jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer'),
+        algorithms: ['HS256']
     },
     (payload, done) => {
         done(null, payload.user);
     }
 );
 
-module.exports = { basicStrategy, jwtStrategy };
+module.exports = { localStrategy, jwtStrategy };
 
