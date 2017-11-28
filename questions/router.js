@@ -7,7 +7,7 @@ const router = express.Router();
 const jsonParser = bodyParser.json();
 
 router.post('/', jsonParser, (req, res) => {
-  const requiredFields = ['question', 'answers', 'correctAnswer'];
+  const requiredFields = ['question', 'answers', 'correct_answer'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
   if (missingField) {
@@ -19,7 +19,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const stringFields = ['question', 'correctAnswer'];
+  const stringFields = ['question', 'correct_answer'];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
@@ -33,7 +33,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const explicityTrimmedFields = ['question', 'answers', 'correctAnswer'];
+  const explicityTrimmedFields = ['question', 'correct_answer'];
   const nonTrimmedField = explicityTrimmedFields.find(
     field => req.body[field].trim() !== req.body[field]
   );
@@ -47,8 +47,8 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  let { question, answers, correctAnswer } = req.body;
-  return Question.create({ question, answers, correctAnswer })
+  let { question, answers, correct_answer } = req.body;
+  return Question.create({ question, answers, correct_answer })
     .then(question => {
       return res.status(201).json({ question });
     })
