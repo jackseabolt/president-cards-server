@@ -7,7 +7,7 @@ const router = express.Router();
 const jsonParser = bodyParser.json(); 
 
 router.post('/', jsonParser, (req, res) => {
-    const requiredFields = ['username', 'password']; 
+    const requiredFields = ['firstName', 'lastName', 'username', 'password']; 
     const missingField = requiredFields.find(field => !(field in req.body));
 
     if (missingField) {
@@ -19,7 +19,7 @@ router.post('/', jsonParser, (req, res) => {
         });
     }
 
-    const stringFields = ['username', 'password']; 
+    const stringFields = ['firstName', 'lastName', 'username', 'password']; 
     const nonStringField = stringFields.find(
         field => field in req.body && typeof req.body[field] !== 'string'
     ); 
@@ -33,7 +33,7 @@ router.post('/', jsonParser, (req, res) => {
         }); 
     }
 
-    const explicityTrimmedFields = ['username', 'password']; 
+    const explicityTrimmedFields = ['firstName', 'lastName', 'username', 'password']; 
     const nonTrimmedField = explicityTrimmedFields.find(
         field => req.body[field].trim() !== req.body[field]
       );
@@ -48,6 +48,8 @@ router.post('/', jsonParser, (req, res) => {
       }
     
       const sizedFields = {
+        firstName: { min: 1 },
+        lastName: { min: 1 },
         username: { min: 1 },
         password: { min: 10, max: 72 }
       };
@@ -71,9 +73,7 @@ router.post('/', jsonParser, (req, res) => {
         });
       }
     
-      let { username, password } = req.body;
-      console.log(req.body);
-      console.log(username);
+      let { firstName, lastName, username, password } = req.body;
       return User.find({ username })
         .count()
         .then(count => {
@@ -91,7 +91,7 @@ router.post('/', jsonParser, (req, res) => {
         })
         .then(hash => {
             console.log('hash:', hash);
-            return User.create({ username, password: hash}); 
+            return User.create({ firstName, lastName, username, password: hash}); 
         })
         .then(user => {
             console.log('user:', user);
