@@ -22,7 +22,22 @@ const UserSchema = mongoose.Schema({
     password: {
         type: String, 
         required: true
-    }
+    },
+    questions: [
+        {
+            question: String,
+            answers: [
+                {
+                    type: String
+                    // DO YOU NEED REQUIRED?
+                }
+                // IS THIS CORRECT?
+            ],  
+            correct_answer: String
+            // later on we will add a next pointer
+        }
+    ]
+    // questions array of questions
 });
 
 UserSchema.methods.apiRepr = function() {

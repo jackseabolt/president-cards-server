@@ -3,6 +3,7 @@
 const express = require('express'); 
 const bodyParser = require('body-parser'); 
 const { User } = require('./models');
+const { Question } = require('../questions/models'); 
 const router = express.Router(); 
 const jsonParser = bodyParser.json(); 
 
@@ -87,13 +88,28 @@ router.post('/', jsonParser, (req, res) => {
                 })
             }
             console.log('count:', count);
-            return User.hashPassword(password);
+
+            return Promise.all([User.hashPassword(password), 
+                Question.find()
+            ]);
         })
-        .then(hash => {
-            console.log('hash:', hash);
-            return User.create({ firstName, lastName, username, password: hash}); 
+
+        // question.find()
+        // map 
+        // save user.questions
+        // final mapped value
+
+
+
+        .then(xyz => {
+            // console.log('hash:', hash);
+            console.log(xyz)
+            return User.create({ firstName, lastName, username, password: hash }); 
         })
         .then(user => {
+        // OUR MESS
+            
+        // END OF MESS
             console.log('user:', user);
             return res.status(201).json(user.apiRepr()); 
         })
