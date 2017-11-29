@@ -79,7 +79,6 @@ router.post('/', jsonParser, (req, res) => {
         .count()
         .then(count => {
             if (count > 0) {
-                console.log('the error is firing!!!');
                 return Promise.reject({
                     code: 422, 
                     reason: 'Validation Error', 
@@ -87,8 +86,6 @@ router.post('/', jsonParser, (req, res) => {
                     location: 'username'
                 })
             }
-            console.log('count:', count);
-
             return Promise.all([User.hashPassword(password), 
                 Question.find()
             ]);
@@ -100,7 +97,8 @@ router.post('/', jsonParser, (req, res) => {
                     question: question.question,
                     answers: question.answers,
                     correct_answer: question.correct_answer,
-                    next: 1
+                    next: 1, 
+                    m: 1
                 }
             });
             return User.create({ firstName, lastName, username, password: data[0], questions: questions }); 
@@ -122,5 +120,39 @@ router.get('/', (req, res) => {
     User.find()
         .then(users => res.json(users.map(user => user.apiRepr()))); 
 }); 
+
+router.put('/', jsonParser, (req, res) => {  // should authenticate this route
+    console.log(req.body.username); 
+    console.log(req.body.answerInput); 
+    User.findOne({username: req.body.username})
+        .then(user => { 
+            let correctAnswer = user.questions[user.head].correct_answer;
+            console.log(user.questions[user.head].correct_answer)
+
+
+        })    
+    //         let userAnswer = req.body.answerInput; 
+    //         let currentQuestion = user[0].questions[0]; 
+    //         if(userAnswer === correctAnswer) {
+                
+                
+    //             // User.set({username: req.body.username, "questions.m": "1" }); 
+
+    //             User.questions[0].update({
+                     
+
+                    
+    //             })
+
+
+    //             // Recipes.update({
+    //             //     id: req.params.id,
+    //             //     name: req.body.name,
+    //             //     ingredients: req.body.ingredients
+    //             //   });
+    //             //   res.status(204).end();
+    //         }
+    //     })
+})
 
 module.exports = { router }; 

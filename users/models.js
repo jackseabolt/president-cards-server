@@ -32,7 +32,8 @@ const UserSchema = mongoose.Schema({
                 }
             ],  
             correct_answer: String,
-            next: Number
+            next: Number, 
+            m: Number
         }
     ],
     head: {
@@ -47,7 +48,8 @@ UserSchema.methods.apiRepr = function() {
         firstName: this.firstName,
         lastName: this.lastName,
         username: this.username,
-        questions: this.questions
+        questions: this.questions, 
+        id: this._id
     };
 }; 
 
