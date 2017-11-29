@@ -93,16 +93,7 @@ router.post('/', jsonParser, (req, res) => {
                 Question.find()
             ]);
         })
-
-        // question.find()
-        // map 
-        // save user.questions
-        // final mapped value
-
-
-
         .then(data => {
-            // console.log('hash:', hash);
             console.log(data)
             const questions = data[1].map((question, index) => {
                 return {
@@ -115,9 +106,6 @@ router.post('/', jsonParser, (req, res) => {
             return User.create({ firstName, lastName, username, password: data[0], questions: questions }); 
         })
         .then(user => {
-        // OUR MESS
-            
-        // END OF MESS
             console.log('user:', user);
             return res.status(201).json(user.apiRepr()); 
         })
