@@ -121,12 +121,15 @@ router.get('/', (req, res) => {
         .then(users => res.json(users.map(user => user.apiRepr()))); 
 }); 
 
-// router.get('/update', jsonParser, (res,res) => {
-//     user.findOne({ username: res.body.username})
-//         .then(item => {
-//             res.json({ questions: item.questions, head: item.head })
-//         })
-// })
+router.get('/:username', jsonParser, (req,res) => {
+    console.log('the route ran');
+    console.log(req.params.username);
+    User.findOne({ username: req.params.username})
+        .then(item => {
+            console.log(item.apiRepr());
+            res.json(item.apiRepr());
+        });
+});
 
 router.put('/', jsonParser, (req, res) => {  // should authenticate this route
     console.log(req.body.username); 
