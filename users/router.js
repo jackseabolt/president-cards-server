@@ -121,27 +121,41 @@ router.get('/', (req, res) => {
         .then(users => res.json(users.map(user => user.apiRepr()))); 
 }); 
 
+// router.get('/update', jsonParser, (res,res) => {
+//     user.findOne({ username: res.body.username})
+//         .then(item => {
+//             res.json({ questions: item.questions, head: item.head })
+//         })
+// })
+
 router.put('/', jsonParser, (req, res) => {  // should authenticate this route
     console.log(req.body.username); 
     console.log(req.body.answerInput); 
     User.findOne({username: req.body.username})
         .then(user => { 
-
+            let currentQuestionIndex = user.head; 
+            let currentQuestion = user.questions[user.head]; 
             let correctAnswer = user.questions[user.head].correct_answer;
             let userAnswer = req.body.answerInput; 
 
             if ( userAnswer === correctAnswer) {
-                user.questions[user.head].m = user.questions[user.head].m * 2; 
-                let moves = user.questions[user.head].m
+                currentQuestion.m = currentQuestion.m * 2; 
+                let moves = currentQuestion.m
                 
-                let current = user.questions[user.head]
+                let prev = currentQuestion
 
                 for(let i = 0; i < moves; i++) {
-                    if (current.next) {
-                        current = user.questions[current.next]; 
-                        console.log(current)
+                    if (prev.next) {
+                        console.log(prev)
+                        prev = user.questions[prev.next]; 
                     }
+                    else return
                 }
+
+                user.head = currentQuestion.next; 
+                currentQuestion.next = prev.next; 
+                prev.next = currentQuestionIndex; 
+
             }
             else {
                 user.questions[0].m = 1;
@@ -151,28 +165,6 @@ router.put('/', jsonParser, (req, res) => {  // should authenticate this route
         .then(() => {
             res.status(200).json({message: "Your question was updated"})
         })    
-    //         let userAnswer = req.body.answerInput; 
-    //         let currentQuestion = user[0].questions[0]; 
-    //         if(userAnswer === correctAnswer) {
-                
-                
-    //             // User.set({username: req.body.username, "questions.m": "1" }); 
-
-    //             User.questions[0].update({
-                     
-
-                    
-    //             })
-
-
-    //             // Recipes.update({
-    //             //     id: req.params.id,
-    //             //     name: req.body.name,
-    //             //     ingredients: req.body.ingredients
-    //             //   });
-    //             //   res.status(204).end();
-    //         }
-    //     })
 })
 
 module.exports = { router }; 

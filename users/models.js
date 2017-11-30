@@ -48,7 +48,9 @@ UserSchema.methods.apiRepr = function() {
         firstName: this.firstName,
         lastName: this.lastName,
         username: this.username,
-        questions: this.questions, 
+        // questions: this.questions, 
+        question: this.questions[this.head].question, // question at head
+        answers: this.questions[this.head].answers, // answers to question, not correct answer
         id: this._id
     };
 }; 
