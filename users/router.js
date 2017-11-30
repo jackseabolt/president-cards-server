@@ -97,7 +97,7 @@ router.post('/', jsonParser, (req, res) => {
                     question: question.question,
                     answers: question.answers,
                     correct_answer: question.correct_answer,
-                    next: 1, 
+                    next: index + 1, 
                     m: 1
                 }
             });
@@ -126,10 +126,30 @@ router.put('/', jsonParser, (req, res) => {  // should authenticate this route
     console.log(req.body.answerInput); 
     User.findOne({username: req.body.username})
         .then(user => { 
+
             let correctAnswer = user.questions[user.head].correct_answer;
-            console.log(user.questions[user.head].correct_answer)
+            let userAnswer = req.body.answerInput; 
 
+            if ( userAnswer === correctAnswer) {
+                user.questions[user.head].m = user.questions[user.head].m * 2; 
+                let moves = user.questions[user.head].m
+                
+                let current = user.questions[user.head]
 
+                for(let i = 0; i < moves; i++) {
+                    if (current.next) {
+                        current = user.questions[current.next]; 
+                        console.log(current)
+                    }
+                }
+            }
+            else {
+                user.questions[0].m = 1;
+            }
+            return user.save(); 
+        })
+        .then(() => {
+            res.status(200).json({message: "Your question was updated"})
         })    
     //         let userAnswer = req.body.answerInput; 
     //         let currentQuestion = user[0].questions[0]; 
