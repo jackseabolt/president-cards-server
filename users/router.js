@@ -91,13 +91,18 @@ router.post('/', jsonParser, (req, res) => {
             ]);
         })
         .then(data => {
-            console.log(data)
+            console.log(data);
             const questions = data[1].map((question, index) => {
+                let next;
+                if (index < data[1].length-1) {
+                    next = index+1;
+                }
+                else {next = null;}
                 return {
                     question: question.question,
                     answers: question.answers,
                     correct_answer: question.correct_answer,
-                    next: index + 1, 
+                    next: next,
                     m: 1
                 }
             });
@@ -132,37 +137,39 @@ router.get('/:username', jsonParser, (req,res) => {
 });
 
 router.put('/', jsonParser, (req, res) => {  // should authenticate this route
-    console.log(req.body.username); 
-    console.log(req.body.answerInput); 
+    // console.log(req.body.username); 
+    // console.log(req.body.answerInput); 
     User.findOne({username: req.body.username})
         .then(user => { 
+            // console.log('this is user.questions:', user.questions);
+            // console.log('this is the head:', user.head);
             let currentQuestionIndex = user.head; 
             let currentQuestion = user.questions[user.head]; 
             let correctAnswer = user.questions[user.head].correct_answer;
             let userAnswer = req.body.answerInput; 
 
             if ( userAnswer === correctAnswer) {
+                console.log('Youre right!');
                 currentQuestion.m = currentQuestion.m * 2; 
-                let moves = currentQuestion.m
-                
-                let prev = currentQuestion
-
-                for(let i = 0; i < moves; i++) {
-                    if (prev.next) {
-                        console.log(prev)
-                        prev = user.questions[prev.next]; 
-                    }
-                    else return
-                }
-
-                user.head = currentQuestion.next; 
-                currentQuestion.next = prev.next; 
-                prev.next = currentQuestionIndex; 
-
             }
             else {
-                user.questions[0].m = 1;
+                console.log('Study harder!');
+                currentQuestion.m = 1;
             }
+            let moves = currentQuestion.m;
+            let prev = currentQuestion;
+            user.head = currentQuestion.next; 
+            for(let i = 0; i < moves; i++) {
+                if (prev.next !== null) {
+                    // console.log(prev);
+                    prev = user.questions[prev.next]; 
+                }
+                // else return;
+            }
+            console.log('this is currentQuestion.next:',currentQuestion.next);
+            
+            currentQuestion.next = prev.next; 
+            prev.next = currentQuestionIndex; 
             return user.save(); 
         })
         .then(() => {
