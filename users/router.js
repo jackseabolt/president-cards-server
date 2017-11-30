@@ -1,103 +1,103 @@
-'use strict'; 
+'use strict';
 
-const express = require('express'); 
-const bodyParser = require('body-parser'); 
+const express = require('express');
+const bodyParser = require('body-parser');
 const { User } = require('./models');
-const { Question } = require('../questions/models'); 
-const router = express.Router(); 
-const jsonParser = bodyParser.json(); 
+const { Question } = require('../questions/models');
+const router = express.Router();
+const jsonParser = bodyParser.json();
 
 router.post('/', jsonParser, (req, res) => {
-    const requiredFields = ['firstName', 'lastName', 'username', 'password']; 
+    const requiredFields = ['firstName', 'lastName', 'username', 'password'];
     const missingField = requiredFields.find(field => !(field in req.body));
 
     if (missingField) {
         return res.status(422).json({
-            code: 422, 
-            reason: 'Validation Error', 
-            message: 'Missing field', 
+            code: 422,
+            reason: 'Validation Error',
+            message: 'Missing field',
             location: missingField
         });
     }
 
-    const stringFields = ['firstName', 'lastName', 'username', 'password']; 
+    const stringFields = ['firstName', 'lastName', 'username', 'password'];
     const nonStringField = stringFields.find(
         field => field in req.body && typeof req.body[field] !== 'string'
-    ); 
+    );
 
     if (nonStringField) {
         return res.status(422).json({
-            code: 422, 
-            reson: 'Validation Error', 
-            message: 'Incorrect field type: expect string', 
+            code: 422,
+            reson: 'Validation Error',
+            message: 'Incorrect field type: expect string',
             location: nonStringField
-        }); 
+        });
     }
 
-    const explicityTrimmedFields = ['firstName', 'lastName', 'username', 'password']; 
+    const explicityTrimmedFields = ['firstName', 'lastName', 'username', 'password'];
     const nonTrimmedField = explicityTrimmedFields.find(
         field => req.body[field].trim() !== req.body[field]
-      );
-    
-      if (nonTrimmedField) {
+    );
+
+    if (nonTrimmedField) {
         return res.status(422).json({
-          code: 422,
-          reason: 'ValidationError',
-          message: 'Cannot start or end with whitespace',
-          location: nonTrimmedField
+            code: 422,
+            reason: 'ValidationError',
+            message: 'Cannot start or end with whitespace',
+            location: nonTrimmedField
         });
-      }
-    
-      const sizedFields = {
+    }
+
+    const sizedFields = {
         firstName: { min: 1 },
         lastName: { min: 1 },
         username: { min: 1 },
         password: { min: 10, max: 72 }
-      };
-      const tooSmallField = Object.keys(sizedFields).find(field =>
+    };
+    const tooSmallField = Object.keys(sizedFields).find(field =>
         'min' in sizedFields[field] &&
         req.body[field].trim().length < sizedFields[field].min
-      );
-      const tooLargeField = Object.keys(sizedFields).find(field =>
+    );
+    const tooLargeField = Object.keys(sizedFields).find(field =>
         'max' in sizedFields[field] &&
         req.body[field].trim().length > sizedFields[field].max
-      );
-    
-      if (tooSmallField || tooLargeField) {
+    );
+
+    if (tooSmallField || tooLargeField) {
         return res.status(422).json({
-          code: 422,
-          reason: 'ValidationError',
-          message: tooSmallField
-            ? `Must be at least ${sizedFields[tooSmallField].min} characters long`
-            : `Must be at most ${sizedFields[tooLargeField].max} characters long`,
-          location: tooSmallField || tooLargeField
+            code: 422,
+            reason: 'ValidationError',
+            message: tooSmallField
+                ? `Must be at least ${sizedFields[tooSmallField].min} characters long`
+                : `Must be at most ${sizedFields[tooLargeField].max} characters long`,
+            location: tooSmallField || tooLargeField
         });
-      }
-    
-      let { firstName, lastName, username, password } = req.body;
-      return User.find({ username })
+    }
+
+    let { firstName, lastName, username, password } = req.body;
+    return User.find({ username })
         .count()
         .then(count => {
             if (count > 0) {
                 return Promise.reject({
-                    code: 422, 
-                    reason: 'Validation Error', 
-                    message: 'Username already taken', 
+                    code: 422,
+                    reason: 'Validation Error',
+                    message: 'Username already taken',
                     location: 'username'
                 })
             }
-            return Promise.all([User.hashPassword(password), 
-                Question.find()
+            return Promise.all([User.hashPassword(password),
+            Question.find()
             ]);
         })
         .then(data => {
             console.log(data);
             const questions = data[1].map((question, index) => {
                 let next;
-                if (index < data[1].length-1) {
-                    next = index+1;
+                if (index < data[1].length - 1) {
+                    next = index + 1;
                 }
-                else {next = null;}
+                else { next = null; }
                 return {
                     question: question.question,
                     answers: question.answers,
@@ -106,30 +106,30 @@ router.post('/', jsonParser, (req, res) => {
                     m: 1
                 }
             });
-            return User.create({ firstName, lastName, username, password: data[0], questions: questions }); 
+            return User.create({ firstName, lastName, username, password: data[0], questions: questions });
         })
         .then(user => {
             console.log('user:', user);
-            return res.status(201).json(user.apiRepr()); 
+            return res.status(201).json(user.apiRepr());
         })
         .catch(err => {
             if (err.reason === 'Validation Error') {
-                return res.status(err.code).json(err); 
+                return res.status(err.code).json(err);
             }
             console.error(err);
-            res.status(500).json({ code: 500, message: 'Internal server error'});
+            res.status(500).json({ code: 500, message: 'Internal server error' });
         });
 });
 
 router.get('/', (req, res) => {
     User.find()
-        .then(users => res.json(users.map(user => user.apiRepr()))); 
-}); 
+        .then(users => res.json(users.map(user => user.apiRepr())));
+});
 
-router.get('/:username', jsonParser, (req,res) => {
+router.get('/:username', jsonParser, (req, res) => {
     console.log('the route ran');
     console.log(req.params.username);
-    User.findOne({ username: req.params.username})
+    User.findOne({ username: req.params.username })
         .then(item => {
             console.log(item.apiRepr());
             res.json(item.apiRepr());
@@ -139,42 +139,43 @@ router.get('/:username', jsonParser, (req,res) => {
 router.put('/', jsonParser, (req, res) => {  // should authenticate this route
     // console.log(req.body.username); 
     // console.log(req.body.answerInput); 
-    User.findOne({username: req.body.username})
-        .then(user => { 
+    User.findOne({ username: req.body.username })
+        .then(user => {
             // console.log('this is user.questions:', user.questions);
             // console.log('this is the head:', user.head);
-            let currentQuestionIndex = user.head; 
-            let currentQuestion = user.questions[user.head]; 
+            let currentQuestionIndex = user.head;
+            let currentQuestion = user.questions[user.head];
             let correctAnswer = user.questions[user.head].correct_answer;
-            let userAnswer = req.body.answerInput; 
-
-            if ( userAnswer === correctAnswer) {
-                console.log('Youre right!');
-                currentQuestion.m = currentQuestion.m * 2; 
+            let userAnswer = req.body.answerInput;
+            let response;
+            if (userAnswer === correctAnswer) {
+                response = "You're right!";
+                currentQuestion.m = currentQuestion.m * 2;
             }
             else {
-                console.log('Study harder!');
+                response = "Study harder!";
                 currentQuestion.m = 1;
             }
             let moves = currentQuestion.m;
             let prev = currentQuestion;
-            user.head = currentQuestion.next; 
-            for(let i = 0; i < moves; i++) {
+            user.head = currentQuestion.next;
+            for (let i = 0; i < moves; i++) {
                 if (prev.next !== null) {
                     // console.log(prev);
-                    prev = user.questions[prev.next]; 
+                    prev = user.questions[prev.next];
                 }
                 // else return;
             }
-            console.log('this is currentQuestion.next:',currentQuestion.next);
-            
-            currentQuestion.next = prev.next; 
-            prev.next = currentQuestionIndex; 
-            return user.save(); 
+
+
+            currentQuestion.next = prev.next;
+            prev.next = currentQuestionIndex;
+            user.save();
+            return response;
         })
-        .then(() => {
-            res.status(200).json({message: "Your question was updated"})
-        })    
-})
+        .then((response) => {
+            res.status(200).json({ message: response });
+        });
+});
 
 module.exports = { router }; 
