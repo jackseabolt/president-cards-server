@@ -150,7 +150,7 @@ router.put('/', jsonParser, (req, res) => {  // should authenticate this route
             let response;
             if (userAnswer === correctAnswer) {
                 response = "You're right!";
-                currentQuestion.m = currentQuestion.m * 2;
+                currentQuestion.m = currentQuestion.m * 3;
             }
             else {
                 response = "Study harder!";
