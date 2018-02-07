@@ -1,45 +1,45 @@
-# Thinkful Backend Template
 
-A template for developing and deploying Node.js apps.
+<h1 align="center">POTUS Facts</h1>
+<p><em>This document provides general information on the POTUS Facts API backend.  For more information about the POTUS Facts client, please see <a href="https://github.com/bmalin92/presidents-cards-client">president-cards-client</a>.</em></p>
 
-## Getting started
+Why POTUS Facts
+-------------
+Are you a US history student? Maybe you just like presidential trivia. This application is for you! This application uses a spaced repition algorithm to sort presidential trivia questions. The more often you get a question correct, the less you see that question.  
 
-### Setting up a project
+How it Works
+------------
+<table layout="fixed">
+  <tr>
+    <td width="55%">
+      <p>POTUS Facts keeps a custom set of trivia questions for each user. Create a user and sign in</p>
+    </td>
+    <td width = "40%">
+      <img src="public/images/readme_image1.png" max-height="240px" width="auto">
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <p>The application will provide a question. Answer the question by filling in the input and clicking submit. The application will let you know if you got the question right or wrong. Click next to be given a new question.</p>
+    </td>
+    <td width = "40%">
+      <img src="public/images/readme_image2.png" max-height="240px" width="auto">
+    </td>
+  </tr>
+</table>
 
-* Move into your projects directory: `cd ~/YOUR_PROJECTS_DIRECTORY`
-* Clone this repository: `git clone https://github.com/Thinkful-Ed/backend-template YOUR_PROJECT_NAME`
-* Move into the project directory: `cd YOUR_PROJECT_NAME`
-* Install the dependencies: `npm install`
-* Create a new repo on GitHub: https://github.com/new
-    * Make sure the "Initialize this repository with a README" option is left unchecked
-* Update the remote to point to your GitHub repository: `git remote set-url origin https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME`
+For local use
+--------
 
-### Working on the project
+```bash
+# Clone repository
+git clone https://github.com/bmalin92/president-cards-server
 
-* Move into the project directory: `cd ~/YOUR_PROJECTS_DIRECTORY/YOUR_PROJECT_NAME`
-* Run the development task: `npm start`
-    * Starts a server running at http://localhost:8080
-    * Automatically restarts when any of your files change
+# Change directory
+cd president-cards-server
 
-## Databases
+# Install NPM dependencies
+npm install
 
-By default, the template is configured to connect to a MongoDB database using Mongoose.  It can be changed to connect to a PostgreSQL database using Knex by replacing any imports of `db-mongoose.js` with imports of `db-knex.js`, and uncommenting the Postgres `DATABASE_URL` lines in `config.js`.
-
-## Deployment
-
-Requires the [Heroku CLI client](https://devcenter.heroku.com/articles/heroku-command-line).
-
-### Setting up the project on Heroku
-
-* Move into the project directory: `cd ~/YOUR_PROJECTS_DIRECTORY/YOUR_PROJECT_NAME`
-* Create the Heroku app: `heroku create PROJECT_NAME`
-
-* If your backend connects to a database, you need to configure the database URL:
-    * For a MongoDB database: `heroku config:set DATABASE_URL=mongodb://USERNAME:PASSWORD@HOST:PORT/DATABASE_NAME`
-    * For a PostgreSQL database: `heroku config:set DATABASE_URL=postgresql://USERNAME:PASSWORD@HOST:PORT/DATABASE_NAME`
-
-* If you are creating a full-stack app, you need to configure the client origin: `heroku config:set CLIENT_ORIGIN=https://www.YOUR_DEPLOYED_CLIENT.com`
-
-### Deploying to Heroku
-
-* Push your code to Heroku: `git push heroku master`
+# Start the server
+nodemon index
+```
