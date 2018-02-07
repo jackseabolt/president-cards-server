@@ -5,16 +5,19 @@ const cors = require('cors');
 const morgan = require('morgan');
 const passport = require('passport');
 const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+require('dotenv').config();
+
 const { router: usersRouter } = require('./users');
 const { router: questionsRouter } = require('./questions');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+
 const { PORT, CLIENT_ORIGIN } = require('./config');
 const { dbConnect } = require('./db-mongoose');
+// const {dbConnect} = require('./db-knex');
 const jwtAuth = passport.authenticate('jwt', { session: false });
-const app = express();
 
-mongoose.Promise = global.Promise;
-require('dotenv').config();
+const app = express();
 
 passport.use(localStrategy);
 passport.use(jwtStrategy);
